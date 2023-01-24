@@ -6,9 +6,11 @@ public class PlayerControllerX : MonoBehaviour
 {
     public bool gameOver;
 
-    public float floatForce;
+    public float floatForce = 20f;
     private float gravityModifier = 1.5f;
+
     private Rigidbody playerRb;
+    private bool isOnTheGround = true;
 
     public ParticleSystem explosionParticle;
     public ParticleSystem fireworksParticle;
@@ -17,26 +19,32 @@ public class PlayerControllerX : MonoBehaviour
     public AudioClip moneySound;
     public AudioClip explodeSound;
 
+    
+    private int counter;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        playerRb = GetComponent<Rigidbody>();
         Physics.gravity *= gravityModifier;
         playerAudio = GetComponent<AudioSource>();
 
         // Apply a small upward force at the start of the game
-        playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+        playerRb.AddForce(Vector3.up * floatForce, ForceMode.Impulse);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        // While space is pressed and player is low enough, float up
-        if (Input.GetKey(KeyCode.Space) && !gameOver)
+        
+        if (Input.GetKeyDown(KeyCode.Space) && !gameOver && !isOnTheGround)
         {
-            playerRb.AddForce(Vector3.up * floatForce);
+            isOnTheGround = false;
+            playerRb.AddForce(Vector3.up * floatForce, ForceMode.Impulse);
         }
+        
     }
 
     private void OnCollisionEnter(Collision other)
@@ -49,7 +57,8 @@ public class PlayerControllerX : MonoBehaviour
             gameOver = true;
             Debug.Log("Game Over!");
             Destroy(other.gameObject);
-        } 
+
+        }
 
         // if player collides with money, fireworks
         else if (other.gameObject.CompareTag("Money"))
@@ -57,9 +66,25 @@ public class PlayerControllerX : MonoBehaviour
             fireworksParticle.Play();
             playerAudio.PlayOneShot(moneySound, 1.0f);
             Destroy(other.gameObject);
+            AddOneToCounter();
 
         }
+        else if (other.gameObject.CompareTag("Ground"))
+        {
+            isOnTheGround = true;
+            gameOver = true;
+            Debug.Log("Game Over!");
+        }
+        
 
+    }
+
+    private void AddOneToCounter()
+    {
+        counter++;
+        {
+            Debug.Log(counter);
+        }
     }
 
 }
