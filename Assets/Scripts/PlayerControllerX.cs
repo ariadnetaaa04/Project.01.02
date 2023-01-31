@@ -10,7 +10,7 @@ public class PlayerControllerX : MonoBehaviour
     private float gravityModifier = 1.5f;
 
     private Rigidbody playerRb;
-    private bool isOnTheGround = true;
+    private bool isOnTheGround;
 
     public ParticleSystem explosionParticle;
     public ParticleSystem fireworksParticle;
@@ -31,7 +31,7 @@ public class PlayerControllerX : MonoBehaviour
         playerAudio = GetComponent<AudioSource>();
 
         // Apply a small upward force at the start of the game
-        playerRb.AddForce(Vector3.up * floatForce, ForceMode.Impulse);
+        playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
 
     }
 
@@ -74,6 +74,7 @@ public class PlayerControllerX : MonoBehaviour
             isOnTheGround = true;
             gameOver = true;
             Debug.Log("Game Over!");
+            GameObject.Find("Main Camera").GetComponent<AudioSource>().Stop();
         }
         
 
